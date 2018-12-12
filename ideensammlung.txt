@@ -1,0 +1,36 @@
+- fixed size graphics as ascii art
+ -> maybe in separate modules
+ -> import and implement as IO as given in template game
+
+- setting
+Waschmaschinen
+Mikrokosmos
+ungewöhnliche Spielfigur
+andere Perspektive
+fremde Planeten oder ganz klein
+witz
+sarkasmus
+zynismus
+schusseliger npc
+memento-artige erzählung, dinge rollen sich von hinten auf
+
+
+
+- plot
+ ->
+
+
+- places
+ ->
+
+
+- actions?
+
+mehrere fähigkeiten freischaltbar (vorsicht, erhöht komplexität der interaktionen!)
+an schlüsselpunkten: auswahl aus ein bis drei (?) aktionen a,b,c oder 1,2,3 
+items, die Interaktionen erst freischalten oder verändern
+
+- riddles?
+ -> 
+
+
