@@ -7,10 +7,10 @@ import Person
 
 main = do
   game
-  
+
 gameLoop :: Game -> IO Game
 gameLoop (position, person)
-    = do -- you can change these
+    = do
 
         printList $ createHeaderArea person
         putStrLn $ getLocationName $ getLocationAt position
@@ -46,8 +46,6 @@ rightCommands = ["d", "D"]
 type Game = (Position, Person)
 start :: Game
 start =  (startPosition , startCharacter)
-
-
 
  ---------------- constants ----------------
 lineWidth = 80
