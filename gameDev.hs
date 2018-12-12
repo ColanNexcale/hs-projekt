@@ -55,6 +55,9 @@ data Person = Maincharacter {characterName:: String, health :: Int, sunExposure 
 
 data Item = Tool {itemName :: String} | Weapon {itemName:: String, damage :: Int, range :: Int} | Vessel {itemName :: String, capacity :: Int, fill :: Int}
 
+data Day = Day {day :: Int, }
+
+data Daytime = Day | Night
  ---------------- constants ----------------
 lineWidth = 80
 linesPerScreen = 24
