@@ -2,17 +2,6 @@
  -> maybe in separate modules
  -> import and implement as IO as given in template game
 
-- setting
-Waschmaschinen
-Mikrokosmos
-ungewöhnliche Spielfigur
-andere Perspektive
-fremde Planeten oder ganz klein
-witz
-sarkasmus
-zynismus
-schusseliger npc
-memento-artige erzählung, dinge rollen sich von hinten auf
 
 Wichtig:
 -> Bedienungsanleitung vorschalten
@@ -28,7 +17,8 @@ Wichtig:
 
 
 - places
- ->
+  -> kleiner wald (schatten, evtl wasser, aber wegelagerer)
+  -> offenes Gelände (mehrere, einsehbar, Sonne! )
 
 
 - actions?

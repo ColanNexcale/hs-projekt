@@ -1,29 +1,27 @@
+import GameMap
+import Items
 -- main game loop
 -- when user inputs a character corresponding to a direction or an action
 -- (in the proper location), the corresponding game dialogue runs
 
 gameLoop :: Game -> IO Game
-gameLoop (location, character, s)
+gameLoop (position, person)
     = do -- you can change these
+
+        printList $ createHeaderArea person
+        putStrLn $ getLocationName $ getLocationAt position
         emptyLine
         hashLine
         emptyLine
-        putStrLn ("You are in " ++ locationName location) -- ++ location)
-        putStrLn ("You are " ++ character) -- charater
-        putStrLn ("You can travel to Haskell-Sea, but watch out, Lambda-Monsters are said to lurk around!") -- ++ new_location
-        putStrLn ("Anyway, we hope that maybe you can see some magic - functionally - happening.") -- an object maybe, a location ahead
-        putStrLn (" ")
         input <- getLine
-        putStrLn (input) -- return what was the input
+
 
 -- input analysis
-        if input `elem` quitCharacter -- user wants to quit the game
-        then do
-          let  g = (location, character, s)
-          return (g)
-        else do
-            gameLoop(location, character, s)
-
+        if elem input quitCommands
+          then do
+            return (position, person)
+          else do
+            gameLoop $ processInput (position, person) input
 
 -- starts the game loop with the initial Game
 game :: IO ()
@@ -33,34 +31,39 @@ game
       return ()
 
 -- input that exits the game
-quitCharacter = [":q", ":Q", ":e", ":E"]
+quitCommands = [":q", ":Q", ":e", ":E"]
+upCommands = ["w", "W"]
+downCommands = ["s", "S"]
+leftCommands = ["a", "a"]
+rightCommands = ["d", "D"]
 
  -- ------------------- GAME ---------------------
 
---  type Game  = ([Char],[Char], Char) -- you can modify the type
-type Game = (Location, [Char], Char)
+type Game = (Position, Person)
 start :: Game
-start =  (templateLocation , "Harry Curry", 'C') -- to be changed
+start =  (startPosition , startCharacter)
+
+data Person = Person {personName:: String, health :: Int, sunExposure :: Int, hydration :: Int, items :: [Item]}
+
+startCharacter = Person {
+  personName = "Mosh",
+  health = startHealth,
+  sunExposure = startSunExposure,
+  hydration = startHydration,
+  items = startItems
+}
 
 
-------------- data types ----------------
-
- -- data Direction = ..
-
--- data Movement = TurnLeft
-
-data Location = Location1 {locationName :: String} | Location2 {locationName :: String}
-
-data Person = Maincharacter {characterName:: String, health :: Int, sunExposure :: Int, hydration :: Int, items :: [Item]}
-
-data Item = Tool {itemName :: String} | Weapon {itemName:: String, damage :: Int, range :: Int} | Vessel {itemName :: String, capacity :: Int, fill :: Int}
-
-data Day = Day {day :: Int, }
-
-data Daytime = Day | Night
  ---------------- constants ----------------
 lineWidth = 80
 linesPerScreen = 24
+
+startPosition = (1,1)
+
+startHealth = 100
+startSunExposure = 0
+startHydration = 100
+startItems = [waterBottle]
 
 headerAreaHeight = 3
 mainAreaHeight = 18
@@ -73,11 +76,19 @@ hashLine :: IO ()
 hashLine = printCharLine '#'
 
 
----------------- pre build locations ----------------
-templateLocation :: Location
-templateLocation = Location1 "Raum1"
+
 
 ---------------- functions ----------------
+
+processInput :: Game -> String -> Game
+processInput ((x,y), person) input
+  | elem input upCommands = ((x - 1, y), person)
+  | elem input downCommands = ((x + 1, y), person)
+  | elem input leftCommands = ((x, y - 1), person)
+  | elem input rightCommands = ((x, y + 1), person)
+  | otherwise = ((x,y), person)
+
+
 printLines :: Int -> IO ()
 printLines 0 = return ()
 printLines count
@@ -85,12 +96,30 @@ printLines count
       emptyLine
       printLines (count-1)
 
+printList :: [String] -> IO ()
+printList [] = return ()
+printList (l:ls) = do
+                      putStrLn l
+                      printList ls
+
+getAllItemNames :: Person -> String
+getAllItemNames (Person  _  _  _  _  items)
+  = concat (map (\i -> getItemName i) items)
+
 -- prints a line of length lineWidth of given char
 printCharLine :: Char -> IO ()
 printCharLine char = pCL lineWidth char []
     where pCL 0 char line = putStrLn line
           pCL count char line = pCL (count - 1) char (char:line)
+getEmptyLine :: String
+getEmptyLine = build lineWidth
+  where build 0 = []
+        build count = ' ': build (count - 1)
 
-
-createHeaderArea :: String -> IO()
-createHeaderArea textToBeDisplayed = return ()
+createHeaderArea :: Person -> [String]
+createHeaderArea p
+  = getEmptyLine
+    : ("Status > Leben: " ++ (show $ health p)
+       ++ " > Wasserhaushalt: " ++ (show $ hydration p)
+        ++ " > " ++ (getAllItemNames p))
+        : getEmptyLine : []
