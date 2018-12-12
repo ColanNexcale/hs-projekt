@@ -1,18 +1,22 @@
 import GameMap
 import Items
+import Person
 -- main game loop
 -- when user inputs a character corresponding to a direction or an action
 -- (in the proper location), the corresponding game dialogue runs
 
+main = do
+  game
+  
 gameLoop :: Game -> IO Game
 gameLoop (position, person)
     = do -- you can change these
 
         printList $ createHeaderArea person
         putStrLn $ getLocationName $ getLocationAt position
-        emptyLine
-        hashLine
-        emptyLine
+        printLines 23
+        printList $ createFooterArea
+        putStr ">>:"
         input <- getLine
 
 
@@ -43,15 +47,6 @@ type Game = (Position, Person)
 start :: Game
 start =  (startPosition , startCharacter)
 
-data Person = Person {personName:: String, health :: Int, sunExposure :: Int, hydration :: Int, items :: [Item]}
-
-startCharacter = Person {
-  personName = "Mosh",
-  health = startHealth,
-  sunExposure = startSunExposure,
-  hydration = startHydration,
-  items = startItems
-}
 
 
  ---------------- constants ----------------
@@ -60,10 +55,6 @@ linesPerScreen = 24
 
 startPosition = (1,1)
 
-startHealth = 100
-startSunExposure = 0
-startHydration = 100
-startItems = [waterBottle]
 
 headerAreaHeight = 3
 mainAreaHeight = 18
@@ -102,15 +93,17 @@ printList (l:ls) = do
                       putStrLn l
                       printList ls
 
-getAllItemNames :: Person -> String
-getAllItemNames (Person  _  _  _  _  items)
-  = concat (map (\i -> getItemName i) items)
+
 
 -- prints a line of length lineWidth of given char
 printCharLine :: Char -> IO ()
 printCharLine char = pCL lineWidth char []
     where pCL 0 char line = putStrLn line
           pCL count char line = pCL (count - 1) char (char:line)
+
+getCharLine :: Char -> [Char]
+getCharLine char = replicate lineWidth char
+
 getEmptyLine :: String
 getEmptyLine = build lineWidth
   where build 0 = []
@@ -118,8 +111,15 @@ getEmptyLine = build lineWidth
 
 createHeaderArea :: Person -> [String]
 createHeaderArea p
-  = getEmptyLine
-    : ("Status > Leben: " ++ (show $ health p)
-       ++ " > Wasserhaushalt: " ++ (show $ hydration p)
-        ++ " > " ++ (getAllItemNames p))
-        : getEmptyLine : []
+  = (getCharLine  ' ')
+    : ("Status # Leben: " ++ (show $ getHealth p)
+       ++ " # Wasserhaushalt: " ++ (show $ getHydration p)
+        ++ " # " ++ (getItemNames p))
+        : (getCharLine '-') : []
+
+
+createFooterArea :: [String]
+createFooterArea
+  = (getCharLine  '-')
+    : ("Wohin möchtest gehen?")
+      : (getCharLine ' ') : []
