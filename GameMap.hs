@@ -17,11 +17,9 @@ module GameMap (
       locationName :: String,
       sunExposure :: Int,
       locationDescription :: [String],
-      discovery :: Maybe Discovery
+      discovery :: Maybe Water
     }
 
-  data Discovery
-    = Maybe Water
 
   puddleOfWater = Just (10, 50)
 
@@ -39,8 +37,8 @@ module GameMap (
   getLocationDescription :: Location -> [String]
   getLocationDescription loc = locationDescription loc
 
-  getDiscovery :: Location -> Water
-  getDiscovery (Location _ _ _ (Just water) ) = disc
+  getDiscovery :: Location -> Maybe Water
+  getDiscovery (Location _ _ _ (Just water) ) = Just water
   getDiscovery _ = Nothing
 
   getLocationAt :: Position -> Location
@@ -85,7 +83,7 @@ module GameMap (
       locationName = "Waldhuette",
       sunExposure = 0,
       locationDescription = startDescription,
-      discovery = findingWaterBottle
+      discovery = Nothing
     }
 
   endLocation :: Location
@@ -101,7 +99,7 @@ module GameMap (
   deadlyLocation
     = Location {
       locationName = "Hier wartet der Tod",
-      sunExposure = 10,
+      sunExposure = 999,
       locationDescription = deadlyDescription,
       discovery = Nothing
     }
@@ -212,4 +210,39 @@ module GameMap (
 
   bigRockDescription = []
 
-  deadlyDescription = []
+  deadlyDescription = asciiSkullLarge
+
+
+  asciiSkull = [
+    "      ____",
+    "    ,'   Y`.",
+    "   /        \\",
+    "   \\ ()  () /",
+    "    `. /\\ ,'",
+    "8====| \"\" |====8",
+    "     `LLLU'"
+    ]
+
+  asciiSkullLarge = [
+      "    @@@@@                                        @@@@@",
+      "   @@@@@@@                                      @@@@@@@",
+      "   @@@@@@@           @@@@@@@@@@@@@@@            @@@@@@@",
+      "    @@@@@@@@       @@@@@@@@@@@@@@@@@@@        @@@@@@@@",
+      "        @@@@@     @@@@@@@@@@@@@@@@@@@@@     @@@@@",
+      "          @@@@@  @@@@@@@@@@@@@@@@@@@@@@@  @@@@@",
+      "            @@  @@@@@@@@@@@@@@@@@@@@@@@@@  @@",
+      "               @@@@@@@    @@@@@@    @@@@@@",
+      "               @@@@@@      @@@@      @@@@@",
+      "               @@@@@@      @@@@      @@@@@",
+      "                @@@@@@    @@@@@@    @@@@@",
+      "                 @@@@@@@@@@@  @@@@@@@@@@",
+      "                  @@@@@@@@@@  @@@@@@@@@",
+      "              @@   @@@@@@@@@@@@@@@@@   @@",
+      "              @@@@  @@@@ @ @ @ @ @@@@  @@@@",
+      "             @@@@@   @@@ @ @ @ @ @@@   @@@@@",
+      "           @@@@@      @@@@@@@@@@@@@      @@@@@",
+      "         @@@@          @@@@@@@@@@@          @@@@",
+      "      @@@@@              @@@@@@@              @@@@@",
+      "     @@@@@@@                                 @@@@@@@",
+      "      @@@@@                                   @@@@@"
+      ]
