@@ -1,6 +1,7 @@
 import GameMap
 import Items
 import Person
+import Data.List
 -- main game loop
 -- when user inputs a character corresponding to a direction or an action
 -- (in the proper location), the corresponding game dialogue runs
@@ -11,12 +12,15 @@ main = do
 gameLoop :: Game -> IO Game
 gameLoop (position, person)
     = do
-
+        let currentLocation = getLocationAt position
+        let currentLocationDescription = getLocationDescription currentLocation
         printList $ createHeaderArea person
-        putStrLn $ getLocationName $ getLocationAt position
-        printLines 23
+        putStrLn $ getLocationName currentLocation
+        printLines 1
+        printList currentLocationDescription
+        printLines (mainAreaHeight - 1 - (length currentLocationDescription))
         printList $ createFooterArea
-        putStr ">>:"
+        putStr ">>: "
         input <- getLine
 
 
@@ -25,7 +29,14 @@ gameLoop (position, person)
           then do
             return (position, person)
           else do
-            gameLoop $ processInput (position, person) input
+            if elem input exploreCommands
+              then do
+                  let waterSearch = getDiscovery location
+                  let modPerson = modifyPersonStats person
+                else do
+                  let newPosition = getNewPosition input position
+                  let modPerson = modifyPersonStats person $ getLocationAt newPosition
+                  gameLoop (newPosition, modPerson)
 
 -- starts the game loop with the initial Game
 game :: IO ()
@@ -40,6 +51,8 @@ upCommands = ["w", "W"]
 downCommands = ["s", "S"]
 leftCommands = ["a", "a"]
 rightCommands = ["d", "D"]
+exploreCommands = ["u", "U"]
+
 
  -- ------------------- GAME ---------------------
 
@@ -68,14 +81,22 @@ hashLine = printCharLine '#'
 
 
 ---------------- functions ----------------
+processInput :: String -> Person -> Location -> Game
+processInput input person location
+  | elem input  = (person)
 
-processInput :: Game -> String -> Game
-processInput ((x,y), person) input
-  | elem input upCommands = ((x - 1, y), person)
-  | elem input downCommands = ((x + 1, y), person)
-  | elem input leftCommands = ((x, y - 1), person)
-  | elem input rightCommands = ((x, y + 1), person)
-  | otherwise = ((x,y), person)
+getNewPosition :: String -> Position -> Position
+getNewPosition input (x,y)
+  | elem input upCommands = (x - 1, y)
+  | elem input downCommands = (x + 1, y)
+  | elem input leftCommands = (x, y - 1)
+  | elem input rightCommands = (x, y + 1)
+  | otherwise = (x,y)
+
+modifyPersonStats :: Person -> Location -> Person
+modifyPersonStats person location
+  = let sunExMod = getLocationSunExposure location
+    in modifyHydration person sunExMod
 
 
 printLines :: Int -> IO ()
@@ -109,8 +130,7 @@ getEmptyLine = build lineWidth
 
 createHeaderArea :: Person -> [String]
 createHeaderArea p
-  = (getCharLine  ' ')
-    : ("Status # Leben: " ++ (show $ getHealth p)
+  = ("Status # Leben: " ++ (show $ getHealth p)
        ++ " # Wasserhaushalt: " ++ (show $ getHydration p)
         ++ " # " ++ (getItemNames p))
         : (getCharLine '-') : []

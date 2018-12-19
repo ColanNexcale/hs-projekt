@@ -1,5 +1,6 @@
 module Items (
   Item,
+  Water,
   waterBottle,
   getItemName,
   getBottleFill,
@@ -11,6 +12,9 @@ module Items (
     | Weapon {itemName:: String, damage :: Int, range :: Int}
     | Vessel {itemName :: String, capacity :: Int, fill :: Int}
     deriving (Eq)
+
+  -- (Amount, Healthrisk)
+  type Water = (Int, Int)
 
   waterBottle :: Item
   waterBottle = Vessel {itemName = "Wasserflasche", capacity = 50, fill = 50}
