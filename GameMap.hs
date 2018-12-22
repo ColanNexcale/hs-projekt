@@ -5,6 +5,7 @@ module GameMap (
   getLocationSunExposure,
   getLocationAt,
   getLocationDescription,
+  getDiscovery,
   startLocation,
   endLocation
 ) where
@@ -43,24 +44,31 @@ module GameMap (
 
   getLocationAt :: Position -> Location
   getLocationAt pos = findInMap pos gameMap
-    where findInMap pos [] = deadlyLocation
+    where findInMap pos [] = openPlain
           findInMap (x,y) (((locX, locY), loc):locations )
             | x == locX && y == locY = loc
             | otherwise = findInMap (x,y) locations
 
   type GameMap = [(Position, Location)]
   gameMap = [
+    (((-2),2), deadlyLocation),
+    (((-1),0), deadlyLocation),
+    (((-1),1), deadlyLocation),
+    (((-1),2), ledge),
+    ((0, (-1)), deadlyLocation),
     ((0,0), ledge),
     ((0,1), ledge),
     ((0,2), forestBorder),
     ((0,3), forestBorder),
     ((0,4), openPlain),
     ((1,0), ledge),
+    ((1,(-1)), deadlyLocation),
     ((1,1), startLocation),
     ((1,2), denseForest),
     ((1,3), denseForest),
     ((1,4), forestBorder),
     ((2,0), ledge),
+    ((2,(-1)), deadlyLocation),
     ((2,1), lightForest),
     ((2,2), bigRock),
     ((2,3), forestBorder),
@@ -107,7 +115,7 @@ module GameMap (
   denseForest
     = Location {
       locationName = "Dichter Wald",
-      sunExposure = 1,
+      sunExposure = 5,
       locationDescription = denseForestDescription,
       discovery = smallStream
     }
@@ -116,7 +124,7 @@ module GameMap (
   lightForest
     = Location {
       locationName = "Lichter Wald",
-      sunExposure = 2,
+      sunExposure = 10,
       locationDescription = lightForestDescription,
       discovery = puddleOfWater
     }
@@ -125,7 +133,7 @@ module GameMap (
   forestBorder
     = Location {
       locationName = "Waldrand",
-      sunExposure = 3,
+      sunExposure = 15,
       locationDescription = forestBorderDescription,
       discovery = Nothing
     }
@@ -134,7 +142,7 @@ module GameMap (
   ledge
     = Location {
       locationName = "Felsvorsprung",
-      sunExposure = 5,
+      sunExposure = 20,
       locationDescription = ledgeDescription,
       discovery = Nothing
     }
@@ -143,7 +151,7 @@ module GameMap (
   openPlain
     = Location {
       locationName = "Offenes Feld",
-      sunExposure = 5,
+      sunExposure = 25,
       locationDescription = openPlainDescription,
       discovery = Nothing
     }
@@ -152,7 +160,7 @@ module GameMap (
   bigRock
     = Location {
       locationName = "Riesieger Fels",
-      sunExposure = 4,
+      sunExposure = 20,
       locationDescription = bigRockDescription,
       discovery = Nothing
     }
@@ -170,7 +178,12 @@ module GameMap (
     "...aber dir ist es das Wert."
     ]
 
-  endDescription = []
+  endDescription = [
+    "Entkräftet erreichst du die alte Scheune.",
+    "Hier wird seit Jahrzehnten keine Landwirtschaft mehr betrieben, seit Goostlé",
+    "keine Wasserlizenzen mehr für freie Landwirte ausgibt. Den Erntern wäre",
+    "die Hitze ja egal, aber ohne Wasser verdorrt jede Saat."
+    ]
 
   openPlainDescription = [
     "Vor dir liegt ein offenes Feld.",
@@ -193,10 +206,16 @@ module GameMap (
   denseForestDescription = [
     "Dich erwartet ein dichter Bereich des Waldes.",
     "Endlich. Etwas Sonnenschutz. Du atmest entspannt durch und genießt den",
-    "Schatten."
+    "Schatten.",
+    "Du weißt nicht, ob du heute schon zu viel Sonne abbekommen hast oder ob du",
+    "wirklich ein leises Plätschern wahrnimmst..."
     ]
 
-  forestBorderDescription = []
+  forestBorderDescription = [
+    "Du erreichst den Rand des Waldes.",
+    "Auch wenn die Bäume hier noch etwas Schatten spenden, spürst du die Unbarm-",
+    "herzigkeit der Sonne."
+    ]
 
   ledgeDescription = [
     "Du stehst auf einem Felsvorsprung.",
@@ -208,7 +227,7 @@ module GameMap (
     "keinen Schatten mehr spendet. Die Sonne brennt auf deiner Haut."
     ]
 
-  bigRockDescription = []
+  bigRockDescription = ["Großer Fels"]
 
   deadlyDescription = asciiSkullLarge
 

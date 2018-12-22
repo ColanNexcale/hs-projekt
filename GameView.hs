@@ -17,18 +17,23 @@ module GameView (
   printHeader :: Person -> IO ()
   printHeader p = printList $ createHeaderArea p
 
-  printBody :: Location -> IO ()
-  printBody location = do
+  printBody :: Location -> String -> IO ()
+  printBody location note = do
                           let description = getLocationDescription location
                           printLines 1
                           printList description
-                          printLines $ mainAreaHeight - 1 - (length description )
+                          printLines 1
+                          printLines $ mainAreaHeight - 3 - (length description )
+                          printNote note
 
 
   printFooter :: IO ()
   printFooter = do
                   printList createFooterArea
 
+  printNote :: String -> IO ()
+  printNote note = do
+                      putStrLn note
 
   printDeath :: IO ()
   printDeath = do
@@ -38,8 +43,8 @@ module GameView (
   createFooterArea :: [String]
   createFooterArea
     = (getCharLine  '-')
-      : ("Wohin möchtest gehen?")
-        : (getCharLine ' ') : []
+      : ("Was möchtest du tun?")
+        : ("Bewegen: w, a, s,d || Die Umgebung untersuchen: u") : []
 
 
 

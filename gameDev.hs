@@ -12,7 +12,7 @@ main = do
   game
 
 gameLoop :: Game -> IO Game
-gameLoop (position, person)
+gameLoop (position, person, explorationNote)
     = do
         let currentLocation = getLocationAt position
         let currentLocationDescription = getLocationDescription currentLocation
@@ -23,10 +23,10 @@ gameLoop (position, person)
             newGame <- getLine
             if newGame == "j" || newGame == "J"
               then do gameLoop start
-              else do return(position, person)
+              else do return(position, person, "")
           else do
             printHeader person
-            printBody currentLocation
+            printBody currentLocation explorationNote
             printFooter
             putStr ">>: "
             input <- getLine
@@ -34,12 +34,10 @@ gameLoop (position, person)
           -- input analysis
             if elem input quitCommands
               then do
-                return (position, person)
+                return (position, person, "")
               else do
-                let newPosition = getNewPosition input position
-                let newLocation = getLocationAt newPosition
-                let modPerson = modifyPersonStats person newLocation
-                gameLoop (newPosition, modPerson)
+                let newGameState = processInput input person position
+                gameLoop newGameState
 
 -- starts the game loop with the initial Game
 game :: IO ()
@@ -54,13 +52,18 @@ downCommands = ["s", "S"]
 leftCommands = ["a", "a"]
 rightCommands = ["d", "D"]
 exploreCommands = ["u", "U"]
-
+validInput = quitCommands
+            ++ upCommands
+            ++ downCommands
+            ++ leftCommands
+            ++ rightCommands
+            ++ exploreCommands
 
  -- ------------------- GAME ---------------------
 
-type Game = (Position, Person)
+type Game = (Position, Person, String)
 start :: Game
-start =  (startPosition , startCharacter)
+start =  (startPosition , startCharacter, "")
 
 
 
@@ -68,9 +71,22 @@ start =  (startPosition , startCharacter)
 
 startPosition = (1,1)
 
-
 ---------------- functions ----------------
+processInput :: String -> Person -> Position -> Game
+processInput input person position
+  = if elem input exploreCommands
+    then let  location = getLocationAt position
+              discovery = getDiscovery location
+              modPerson = modifyPersonStats person location discovery
+              explorationNote = getExplorationNote discovery
+              in (position, modPerson, explorationNote)
 
+    else if elem input validInput
+        then let  newPosition = getNewPosition input position
+                  newLocation = getLocationAt newPosition
+                  modPerson = modifyPersonStats person newLocation Nothing
+                  in (newPosition, modPerson, "")
+        else (position, person, "> Ungültige Eingabe")
 
 getNewPosition :: String -> Position -> Position
 getNewPosition input (x,y)
@@ -80,7 +96,16 @@ getNewPosition input (x,y)
   | elem input rightCommands = (x, y + 1)
   | otherwise = (x,y)
 
-modifyPersonStats :: Person -> Location -> Person
-modifyPersonStats person location
+getExplorationNote :: Maybe Water -> String
+getExplorationNote Nothing = "> Du findest nichts"
+getExplorationNote (Just (amount, risk))
+  | amount == 100 = " > Du findest einen Bachlauf. Wie erfrischend!"
+  | amount == 10 = "> Du findest eine fast ausgetrocknete Pfütze Wasser. Besser als nichts..."
+  | otherwise = "Du findest etwas Wasser"
+
+modifyPersonStats :: Person -> Location -> Maybe Water -> Person
+modifyPersonStats person location Nothing
   = let sunExMod = getLocationSunExposure location
     in modifyHydration person sunExMod
+modifyPersonStats person location (Just (amount, risk))
+  = modifyHydration person (-amount)
