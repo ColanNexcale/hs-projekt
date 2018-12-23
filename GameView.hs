@@ -3,7 +3,8 @@ module GameView (
   printBody,
   printFooter,
   printDeath,
-  printSolved
+  printSolved,
+  printPrologue
 
 ) where
   import Person
@@ -60,6 +61,10 @@ module GameView (
                               putStrLn newGameRequest
 
 
+  printPrologue :: IO ()
+  printPrologue = do
+                    printList prologue
+
   createFooterArea :: [String]
   createFooterArea
     = (getCharLine  '-')
@@ -104,6 +109,29 @@ module GameView (
 
   newGameRequest :: String
   newGameRequest = "> Möchtest du ein neues Spiel beginnen? j/n"
+
+  prologue = [
+    "           #### #### #### Age of Goostlé #### #### ####",
+    "",
+    "Wir schreiben das Jahr 2139 und direkt nach dem Menschen selbst hat sich",
+    "das Klima zum zweitgrößten Feind der Menschheit erhoben. Die globale",
+    "Erwärmung hat im letzten Jahrhundert über 2 Milliarden Menschen das Leben",
+    "gekostet - durch Krieg, Hunger- und Durstnöte. Die Fusion von Google und",
+    "Nestlé sorgte dafür das der fusionierte Megakonzern Goostlé sowohl das",
+    "weltweite Wasser als auch die Maschinen kontrolliert und brachte damit",
+    "spätestens seit den Wasserkriegen Ende des 21. Jahrhunderts viel Leid",
+    "die Menschheit. Einstige Supermächte zerfielen und wurden abhängig vom",
+    "Erfolg ihrer Lobbyarbeit in den Goostlé Gremien.",
+    "Natürlich nehmen das nicht alle hin. Immer wieder formierte sich der",
+    "Widerstand. Doch es ist mittlerweile nicht mehr möglich einen Computer an-",
+    "zuschalten ohne, dass Goostlé davon Wind bekommt. Doch es gibt Gerüchte",
+    "über eine neue Bewegung, die eine alternative Kommunikationsform gefunden",
+    "haben soll. Du bist fest entschlossen diese Menschen zu finden.",
+    "Und Widerstand zu leisten...",
+    "",
+    "",
+    "Möchtest du dich auf dem Weg machen, dem Widerstand beizutreten? j/n"
+    ]
 
   asciiSkullLarge = [
       "    @@@@@                                        @@@@@",

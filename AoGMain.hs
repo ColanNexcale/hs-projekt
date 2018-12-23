@@ -39,8 +39,15 @@ gameLoop (position, person, explorationNote)
 -- starts the game loop with the initial Game
 game :: IO ()
 game = do
-        gameLoop start
-        return ()
+        printPrologue
+        x <- getLine
+        if x == "j" || x == "J"
+          then do
+                  gameLoop start
+                  return()
+        else do
+                putStrLn "Bye"
+                return ()
 
 -- input collections for distinction
 quitCommands    = [":q", ":Q", ":e", ":E"]
@@ -102,7 +109,7 @@ handleExploration person position
         waterDiscovery  = getWaterDiscovery location
         modPerson       = addItem newItem
           $ modifyPersonStats person location waterDiscovery
-        hintDiscovery   = getHintDiscovery location
+        hintDiscovery   = getHintDiscovery location $ isNewItem person newItem
     in (position, modPerson, hintDiscovery)
 
 -- processes movement and modifies person health/hydration according to the

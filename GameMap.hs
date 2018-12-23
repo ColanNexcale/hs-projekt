@@ -52,8 +52,10 @@ module GameMap (
   getWaterDiscovery :: Location -> Maybe Water
   getWaterDiscovery loc = getWater $ getDiscovery loc
 
-  getHintDiscovery :: Location -> Hint
-  getHintDiscovery loc = getHint $ getDiscovery loc
+  getHintDiscovery :: Location -> Bool -> Hint
+  getHintDiscovery loc isNewItem
+    | isNewItem == True = getHint $ getDiscovery loc
+    | otherwise = getHint nothingToDiscover
 
   getItemDiscovery :: Location -> Maybe Item
   getItemDiscovery loc = getItem $ getDiscovery loc

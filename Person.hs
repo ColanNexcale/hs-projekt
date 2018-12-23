@@ -8,6 +8,7 @@ module Person(
   getItems,
   addItem,
   removeItem,
+  isNewItem,
   getItemNames,
   startCharacter
 ) where
@@ -85,6 +86,10 @@ module Person(
     where addConditionally (Person n he hy items) newItem
             | elem newItem items  = Person n he hy items
             | otherwise           = Person n he hy (items ++ [newItem])
+
+  isNewItem :: Person -> Maybe Item -> Bool
+  isNewItem p Nothing = True
+  isNewItem p (Just item) = not $ elem item $ getItems p
 
   removeItem :: Person -> Item -> Person
   removeItem (Person n he hy items) rmvItem
