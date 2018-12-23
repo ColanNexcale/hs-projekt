@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/linux,haskell
 # Edit at https://www.gitignore.io/?templates=linux,haskell
 
+*.txt
+*.odg
+
 ### Haskell ###
 dist
 dist-*
@@ -42,4 +45,3 @@ cabal.project.local~
 .nfs*
 
 # End of https://www.gitignore.io/api/linux,haskell
- 
