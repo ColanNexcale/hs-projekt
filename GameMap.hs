@@ -185,7 +185,7 @@ module GameMap (
     "Wind und ein warmer Strom zieht durch die undichten Spalten neben deinem",
     "Schlafplatz. Die letzten Tage konntest du dich durch die Wildnis schlagen,",
     "aber deine Wasservorräte werden knapp. Du solltest dich auf den Weg machen.",
-    "Richtung Südosten sagten die anderen Aussätzigen bei deinem letzten Kontakt",
+    "Richtung Südosten, sagten die anderen Aussätzigen bei deinem letzten Kontakt",
     "mit der Zivilisation. Das Leben abseits der Fänge von Goostlé ist hart...",
     "...aber dir ist es das Wert."
     ]
@@ -211,7 +211,7 @@ module GameMap (
 
   lightForestDescription = [
     "Du betrittst einen lichten Bereich des Waldes.",
-    "Das Blätterdach ist hier merklich dünner und du spürst eon leichtes Stechen",
+    "Das Blätterdach ist hier merklich dünner und du spürst ein leichtes Stechen",
     "der Sonne auf den unbedeckten Hautstellen. "
     ]
 

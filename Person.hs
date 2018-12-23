@@ -48,8 +48,8 @@ module Person(
   modifyHydration :: Person -> Int -> Person
   modifyHydration (Person n he hy i) (999) = Person n 0 hy i
   modifyHydration (Person n he hy i) hydrModifier
-    | hy <= 0 = modifyAttribute (Person n he hy i) Health hydrModifier
-    | hy - hydrModifier <= 0 = Person n he 0 i
+    | hy <= 0 && hydrModifier > 0 = modifyAttribute (Person n he hy i) Health hydrModifier
+    | hy - hydrModifier <= 0 =  modifyAttribute (Person n he 0 i) Health (hydrModifier - hy) -- Person n he 0 i
     | hy - hydrModifier >= 100 = Person n he 100 i
     | otherwise = modifyAttribute (Person n he hy i) Hydration hydrModifier
 
