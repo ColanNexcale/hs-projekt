@@ -16,9 +16,10 @@ gameLoop (position, person, explorationNote)
     = do
         let currentLocation = getLocationAt position
         let currentLocationDescription = getLocationDescription currentLocation
-        if getHealth person <= 0
+        if getHealth person <= 0 || isFinal currentLocation
           then do
-            printDeath
+            --printDeath
+            showGameEnd person currentLocation
             putStr ">>: "
             newGame <- getLine
             if newGame == "j" || newGame == "J"
@@ -95,6 +96,12 @@ getNewPosition input (x,y)
   | elem input leftCommands = (x, y - 1)
   | elem input rightCommands = (x, y + 1)
   | otherwise = (x,y)
+
+showGameEnd :: Person -> Location -> IO ()
+showGameEnd person location
+  | getHealth person <= 0 = printDeath
+  | isFinal location = printSolved $ getLocationDescription location
+  | otherwise = return ()
 
 getExplorationNote :: Maybe Water -> String
 getExplorationNote Nothing = "> Du findest nichts"

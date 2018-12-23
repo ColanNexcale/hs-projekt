@@ -6,6 +6,7 @@ module GameMap (
   getLocationAt,
   getLocationDescription,
   getDiscovery,
+  isFinal,
   startLocation,
   endLocation
 ) where
@@ -18,7 +19,8 @@ module GameMap (
       locationName :: String,
       sunExposure :: Int,
       locationDescription :: [String],
-      discovery :: Maybe Water
+      discovery :: Maybe Water,
+      isFinal :: Bool
     }
 
 
@@ -39,8 +41,9 @@ module GameMap (
   getLocationDescription loc = locationDescription loc
 
   getDiscovery :: Location -> Maybe Water
-  getDiscovery (Location _ _ _ (Just water) ) = Just water
+  getDiscovery (Location _ _ _ (Just water) _ ) = Just water
   getDiscovery _ = Nothing
+
 
   getLocationAt :: Position -> Location
   getLocationAt pos = findInMap pos gameMap
@@ -91,7 +94,8 @@ module GameMap (
       locationName = "Waldhuette",
       sunExposure = 0,
       locationDescription = startDescription,
-      discovery = Nothing
+      discovery = Nothing,
+      isFinal = False
     }
 
   endLocation :: Location
@@ -100,7 +104,8 @@ module GameMap (
       locationName = "Sichere Scheune",
       sunExposure = 0,
       locationDescription = endDescription,
-      discovery = Nothing
+      discovery = Nothing,
+      isFinal = True
     }
 
   deadlyLocation :: Location
@@ -109,7 +114,8 @@ module GameMap (
       locationName = "Hier wartet der Tod",
       sunExposure = 999,
       locationDescription = deadlyDescription,
-      discovery = Nothing
+      discovery = Nothing,
+      isFinal = False
     }
   denseForest :: Location
   denseForest
@@ -117,7 +123,8 @@ module GameMap (
       locationName = "Dichter Wald",
       sunExposure = 5,
       locationDescription = denseForestDescription,
-      discovery = smallStream
+      discovery = smallStream,
+      isFinal = False
     }
 
   lightForest :: Location
@@ -126,7 +133,8 @@ module GameMap (
       locationName = "Lichter Wald",
       sunExposure = 10,
       locationDescription = lightForestDescription,
-      discovery = puddleOfWater
+      discovery = puddleOfWater,
+      isFinal = False
     }
 
   forestBorder :: Location
@@ -135,7 +143,8 @@ module GameMap (
       locationName = "Waldrand",
       sunExposure = 15,
       locationDescription = forestBorderDescription,
-      discovery = Nothing
+      discovery = Nothing,
+      isFinal = False
     }
 
   ledge :: Location
@@ -144,7 +153,8 @@ module GameMap (
       locationName = "Felsvorsprung",
       sunExposure = 20,
       locationDescription = ledgeDescription,
-      discovery = Nothing
+      discovery = Nothing,
+      isFinal = False
     }
 
   openPlain :: Location
@@ -153,7 +163,8 @@ module GameMap (
       locationName = "Offenes Feld",
       sunExposure = 25,
       locationDescription = openPlainDescription,
-      discovery = Nothing
+      discovery = Nothing,
+      isFinal = False
     }
 
   bigRock :: Location
@@ -162,7 +173,8 @@ module GameMap (
       locationName = "Riesieger Fels",
       sunExposure = 20,
       locationDescription = bigRockDescription,
-      discovery = Nothing
+      discovery = Nothing,
+      isFinal = False
     }
 
   -- descriptions should be 9 lines

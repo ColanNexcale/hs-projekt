@@ -2,7 +2,8 @@ module GameView (
   printHeader,
   printBody,
   printFooter,
-  printDeath
+  printDeath,
+  printSolved
 
 ) where
   import Person
@@ -39,6 +40,22 @@ module GameView (
   printDeath = do
                   printList asciiSkullLarge
                   printList deathNote
+                  putStrLn newGameRequest
+
+  printSolved :: [String] -> IO ()
+  printSolved description = do
+                              let spacer
+                                    = div (linesPerScreen - length description
+                                    - length endNote - length endIcon) 4
+                              printLines spacer
+                              printList endIcon
+                              printLines spacer
+                              printList description
+                              printLines $ spacer -1
+                              printList endNote
+                              printLines $ spacer -1 
+                              putStrLn newGameRequest
+
 
   createFooterArea :: [String]
   createFooterArea
@@ -74,9 +91,17 @@ module GameView (
 
   deathNote :: [String]
   deathNote = [
-    "Du bist gestorben.",
-    "Möchtest du ein neues Spiel beginnen? j/n"
+    "Du bist gestorben."
     ]
+
+  endNote :: [String]
+  endNote = [
+    "Du hast dein Ziel sicher - und lebendig erreicht, jetzt kannst du dich in",
+    "Ruhe darum kümmern in den Widerstand einzutreten."
+    ]
+
+  newGameRequest :: String
+  newGameRequest = "> Möchtest du ein neues Spiel beginnen? j/n"
 
   asciiSkullLarge = [
       "    @@@@@                                        @@@@@",
@@ -101,3 +126,12 @@ module GameView (
       "     @@@@@@@                                 @@@@@@@",
       "      @@@@@                                   @@@@@"
       ]
+
+  endIcon = [
+    "                     .d88888888b.",
+    "                    d88P\"    \"Y88b",
+    "                    888        888",
+    "                    Y88b      d88P",
+    "                      88bo  od88",
+    "                    d88888  88888b"
+    ]
