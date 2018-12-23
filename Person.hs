@@ -12,6 +12,8 @@ module Person(
   startCharacter
 ) where
 
+  -- bundles all methods to get and modify a persons attributes
+
   import Items
 
   data Person = Person {personName:: String, health :: Int, hydration :: Int, items :: [Item]}
@@ -19,13 +21,7 @@ module Person(
   data PersonAttribute = Health | Hydration
     deriving (Eq)
 
-  -- modifies a person attribute
-  -- default modification is subtraction
-  modifyAttribute :: Person -> PersonAttribute -> Int -> Person
-  modifyAttribute (Person name health hydration items) attr modifier
-    = case  attr of
-            Health -> Person name (health - modifier) hydration items
-            Hydration -> Person name health (hydration - modifier) items
+  -- accessor functions for person attributes
 
   getPersonName :: Person -> String
   getPersonName p = personName p
@@ -33,15 +29,23 @@ module Person(
   getHealth :: Person -> Int
   getHealth p = health p
 
+  getHydration :: Person -> Int
+  getHydration p = hydration p
+
+  -- general purpose modification function
+  -- default modification operation is subtraction
+  modifyAttribute :: Person -> PersonAttribute -> Int -> Person
+  modifyAttribute (Person name health hydration items) attr modifier
+    = case  attr of
+            Health -> Person name (health - modifier) hydration items
+            Hydration -> Person name health (hydration - modifier) items
+
+
   -- subtracts the healthModifier from a persons heath
   -- pass negative int to add health
   modifyHealth :: Person -> Int -> Person
   modifyHealth pers healthModifier = modifyAttribute pers Health healthModifier
 
-
-
-  getHydration :: Person -> Int
-  getHydration p = hydration p
 
   -- subtracts the hydrationModifier from a persons hydration
   -- pass negative int to add to hydration
@@ -53,6 +57,9 @@ module Person(
     | hy - hydrModifier >= 100 = Person n he 100 i
     | otherwise = modifyAttribute (Person n he hy i) Hydration hydrModifier
 
+
+  -- functions for item management
+  -- was planned but not implemented in final version
   getItems :: Person -> [Item]
   getItems p = items p
 

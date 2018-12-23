@@ -4,13 +4,13 @@ import Person
 import Data.List
 import GameView
 
--- main game loop
--- when user inputs a character corresponding to a direction or an action
--- (in the proper location), the corresponding game dialogue runs
-
+-- main function for immediate gamestart via compiled executable
 main = do
-  game
+        game
 
+  -- main game loop
+  -- when user inputs a character corresponding to a direction or an action
+  -- (in the proper location), the corresponding game dialogue runs
 gameLoop :: Game -> IO Game
 gameLoop (position, person, explorationNote)
     = do
@@ -18,13 +18,12 @@ gameLoop (position, person, explorationNote)
         let currentLocationDescription = getLocationDescription currentLocation
         if getHealth person <= 0 || isFinal currentLocation
           then do
-            --printDeath
             showGameEnd person currentLocation
             putStr ">>: "
             newGame <- getLine
             if newGame == "j" || newGame == "J"
               then do gameLoop start
-              else do return(position, person, "")
+              else do return(position, person, [])
           else do
             printHeader person
             printBody currentLocation explorationNote
@@ -32,10 +31,9 @@ gameLoop (position, person, explorationNote)
             putStr ">>: "
             input <- getLine
 
-          -- input analysis
             if elem input quitCommands
               then do
-                return (position, person, "")
+                return (position, person, [])
               else do
                 let newGameState = processInput input person position
                 gameLoop newGameState
@@ -46,7 +44,7 @@ game = do
         gameLoop start
         return ()
 
--- input collections
+-- input collections for distinction
 quitCommands = [":q", ":Q", ":e", ":E"]
 upCommands = ["w", "W"]
 downCommands = ["s", "S"]
@@ -62,9 +60,9 @@ validInput = quitCommands
 
  -- ------------------- GAME ---------------------
 
-type Game = (Position, Person, String)
+type Game = (Position, Person, [String])
 start :: Game
-start =  (startPosition , startCharacter, "")
+start =  (startPosition , startCharacter, [])
 
 
 
@@ -73,21 +71,25 @@ start =  (startPosition , startCharacter, "")
 startPosition = (1,1)
 
 ---------------- functions ----------------
+
+-- distinguishes between movement and explore and modifies person/location
+-- according to intended game logic
 processInput :: String -> Person -> Position -> Game
 processInput input person position
   = if elem input exploreCommands
     then let  location = getLocationAt position
-              discovery = getDiscovery location
-              modPerson = modifyPersonStats person location discovery
-              explorationNote = getExplorationNote discovery
-              in (position, modPerson, explorationNote)
+              waterDiscovery = getWaterDiscovery location
+              hintDiscovery = getHintDiscovery location
+              modPerson = modifyPersonStats person location waterDiscovery
+              -- explorationNote = getExplorationNote discovery
+              in (position, modPerson, hintDiscovery)
 
     else if elem input validInput
         then let  newPosition = getNewPosition input position
                   newLocation = getLocationAt newPosition
                   modPerson = modifyPersonStats person newLocation Nothing
-                  in (newPosition, modPerson, "")
-        else (position, person, "> Ungültige Eingabe")
+                  in (newPosition, modPerson, [])
+        else (position, person, ["> Ungültige Eingabe"])
 
 getNewPosition :: String -> Position -> Position
 getNewPosition input (x,y)
@@ -97,6 +99,8 @@ getNewPosition input (x,y)
   | elem input rightCommands = (x, y + 1)
   | otherwise = (x,y)
 
+-- distinguishes between death and successful game end and delegates screen
+-- output to GameView methods
 showGameEnd :: Person -> Location -> IO ()
 showGameEnd person location
   | getHealth person <= 0 = printDeath
@@ -110,6 +114,8 @@ getExplorationNote (Just (amount, risk))
   | amount == 10 = "> Du findest eine fast ausgetrocknete Pfütze Wasser. Besser als nichts..."
   | otherwise = "Du findest etwas Wasser"
 
+-- used to change person states according to discovery events or the standard
+-- hydration modifier from a locations attribute
 modifyPersonStats :: Person -> Location -> Maybe Water -> Person
 modifyPersonStats person location Nothing
   = let sunExMod = getLocationSunExposure location

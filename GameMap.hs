@@ -5,12 +5,14 @@ module GameMap (
   getLocationSunExposure,
   getLocationAt,
   getLocationDescription,
-  getDiscovery,
+  getWaterDiscovery,
+  getHintDiscovery,
   isFinal,
   startLocation,
   endLocation
 ) where
   import Items
+  import Discovery
 
   type Position = (Int, Int)
 
@@ -19,17 +21,20 @@ module GameMap (
       locationName :: String,
       sunExposure :: Int,
       locationDescription :: [String],
-      discovery :: Maybe Water,
+      discovery :: Discovery,
       isFinal :: Bool
     }
 
-
+  -- predefined discoveries
+  -- type Water imported from Items
+  puddleOfWater :: Maybe Water
   puddleOfWater = Just (10, 50)
 
+  smallStream :: Maybe Water
   smallStream = Just (100, 10)
 
 
--- Accessor function for locations --
+-- accessor function for locations
 
   getLocationName :: Location -> String
   getLocationName loc = locationName loc
@@ -40,11 +45,18 @@ module GameMap (
   getLocationDescription :: Location -> [String]
   getLocationDescription loc = locationDescription loc
 
-  getDiscovery :: Location -> Maybe Water
-  getDiscovery (Location _ _ _ (Just water) _ ) = Just water
-  getDiscovery _ = Nothing
+  getDiscovery :: Location -> Discovery
+  getDiscovery (Location _ _ _ disc _ ) = disc
 
+  getWaterDiscovery :: Location -> Maybe Water
+  getWaterDiscovery loc = getWater $ getDiscovery loc
 
+  getHintDiscovery :: Location -> Hint
+  getHintDiscovery loc = getHint $ getDiscovery loc
+
+  -- import function for main game
+  -- searches GameMap and returns location in order to access all import
+  -- information of the location data type
   getLocationAt :: Position -> Location
   getLocationAt pos = findInMap pos gameMap
     where findInMap pos [] = openPlain
@@ -52,6 +64,7 @@ module GameMap (
             | x == locX && y == locY = loc
             | otherwise = findInMap (x,y) locations
 
+  -- mapping from a position to a predefined location
   type GameMap = [(Position, Location)]
   gameMap = [
     (((-2),2), deadlyLocation),
@@ -88,13 +101,14 @@ module GameMap (
     ((4,4), endLocation)
     ]
 
+  -- predefined locations used in the GameMap
   startLocation :: Location
   startLocation
     = Location {
       locationName = "Waldhuette",
       sunExposure = 0,
       locationDescription = startDescription,
-      discovery = Nothing,
+      discovery = nothingToDiscover,
       isFinal = False
     }
 
@@ -104,7 +118,7 @@ module GameMap (
       locationName = "Sichere Scheune",
       sunExposure = 0,
       locationDescription = endDescription,
-      discovery = Nothing,
+      discovery = nothingToDiscover,
       isFinal = True
     }
 
@@ -114,7 +128,7 @@ module GameMap (
       locationName = "Hier wartet der Tod",
       sunExposure = 999,
       locationDescription = deadlyDescription,
-      discovery = Nothing,
+      discovery = nothingToDiscover,
       isFinal = False
     }
   denseForest :: Location
@@ -123,7 +137,7 @@ module GameMap (
       locationName = "Dichter Wald",
       sunExposure = 5,
       locationDescription = denseForestDescription,
-      discovery = smallStream,
+      discovery = smallStreamDiscovery,
       isFinal = False
     }
 
@@ -133,7 +147,7 @@ module GameMap (
       locationName = "Lichter Wald",
       sunExposure = 10,
       locationDescription = lightForestDescription,
-      discovery = puddleOfWater,
+      discovery = puddleOfWaterDiscovery,
       isFinal = False
     }
 
@@ -143,7 +157,7 @@ module GameMap (
       locationName = "Waldrand",
       sunExposure = 15,
       locationDescription = forestBorderDescription,
-      discovery = Nothing,
+      discovery = nothingToDiscover,
       isFinal = False
     }
 
@@ -153,7 +167,7 @@ module GameMap (
       locationName = "Felsvorsprung",
       sunExposure = 20,
       locationDescription = ledgeDescription,
-      discovery = Nothing,
+      discovery = nothingToDiscover,
       isFinal = False
     }
 
@@ -163,7 +177,7 @@ module GameMap (
       locationName = "Offenes Feld",
       sunExposure = 25,
       locationDescription = openPlainDescription,
-      discovery = Nothing,
+      discovery = nothingToDiscover,
       isFinal = False
     }
 
@@ -173,11 +187,10 @@ module GameMap (
       locationName = "Riesieger Fels",
       sunExposure = 20,
       locationDescription = bigRockDescription,
-      discovery = Nothing,
+      discovery = bigRockDiscovery,
       isFinal = False
     }
 
-  -- descriptions should be 9 lines
   startDescription = [
     "Du befindest dich in einer heruntergekommenen Hütte im Teutoburger Wald.",
     "Obwohl du nicht viel geschlafen hast, weckt dich das unbarmhezige Brennen",
@@ -211,16 +224,16 @@ module GameMap (
 
   lightForestDescription = [
     "Du betrittst einen lichten Bereich des Waldes.",
-    "Das Blätterdach ist hier merklich dünner und du spürst ein leichtes Stechen",
-    "der Sonne auf den unbedeckten Hautstellen. "
+    "Das Blätterdach ist hier merklich dünner und du spürst ein leichtes",
+    "Stechen der Sonne auf den unbedeckten Hautstellen."
     ]
 
   denseForestDescription = [
     "Dich erwartet ein dichter Bereich des Waldes.",
     "Endlich. Etwas Sonnenschutz. Du atmest entspannt durch und genießt den",
     "Schatten.",
-    "Du weißt nicht, ob du heute schon zu viel Sonne abbekommen hast oder ob du",
-    "wirklich ein leises Plätschern wahrnimmst..."
+    "Du weißt nicht, ob du heute schon zu viel Sonne abbekommen hast oder ob",
+    "du wirklich ein leises Plätschern wahrnimmst... gibt es hier etwa Wasser?"
     ]
 
   forestBorderDescription = [
@@ -239,41 +252,12 @@ module GameMap (
     "keinen Schatten mehr spendet. Die Sonne brennt auf deiner Haut."
     ]
 
-  bigRockDescription = ["Großer Fels"]
-
-  deadlyDescription = asciiSkullLarge
-
-
-  asciiSkull = [
-    "      ____",
-    "    ,'   Y`.",
-    "   /        \\",
-    "   \\ ()  () /",
-    "    `. /\\ ,'",
-    "8====| \"\" |====8",
-    "     `LLLU'"
+  bigRockDescription = [
+    "Du stehst am Fuße eines massiven Felsen im Wald.",
+    "20 bis 30 Meter müsste er hoch sein, das wäre genug um über die",
+    "umliegenden Baumwipfel zu spähen. Allerdings gibt es auf dem Weg hinauf",
+    "keinerlei Schatten, du wärst der Sonne erbarmungslos ausgesetzt. Trotzdem",
+    "überlegst du hinaufzuklettern, aber wäre es das Risiko wert?"
     ]
 
-  asciiSkullLarge = [
-      "    @@@@@                                        @@@@@",
-      "   @@@@@@@                                      @@@@@@@",
-      "   @@@@@@@           @@@@@@@@@@@@@@@            @@@@@@@",
-      "    @@@@@@@@       @@@@@@@@@@@@@@@@@@@        @@@@@@@@",
-      "        @@@@@     @@@@@@@@@@@@@@@@@@@@@     @@@@@",
-      "          @@@@@  @@@@@@@@@@@@@@@@@@@@@@@  @@@@@",
-      "            @@  @@@@@@@@@@@@@@@@@@@@@@@@@  @@",
-      "               @@@@@@@    @@@@@@    @@@@@@",
-      "               @@@@@@      @@@@      @@@@@",
-      "               @@@@@@      @@@@      @@@@@",
-      "                @@@@@@    @@@@@@    @@@@@",
-      "                 @@@@@@@@@@@  @@@@@@@@@@",
-      "                  @@@@@@@@@@  @@@@@@@@@",
-      "              @@   @@@@@@@@@@@@@@@@@   @@",
-      "              @@@@  @@@@ @ @ @ @ @@@@  @@@@",
-      "             @@@@@   @@@ @ @ @ @ @@@   @@@@@",
-      "           @@@@@      @@@@@@@@@@@@@      @@@@@",
-      "         @@@@          @@@@@@@@@@@          @@@@",
-      "      @@@@@              @@@@@@@              @@@@@",
-      "     @@@@@@@                                 @@@@@@@",
-      "      @@@@@                                   @@@@@"
-      ]
+  deadlyDescription = []

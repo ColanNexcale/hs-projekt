@@ -13,19 +13,22 @@ module GameView (
   mainAreaHeight = 18
   linesPerScreen = 24
 
-
+  -- bundles all methods for displaying the game progress
+  -- constants and relative amounts of blank lines ensure integer screen
+  -- display on every "frame" of the game
 
   printHeader :: Person -> IO ()
   printHeader p = printList $ createHeaderArea p
 
-  printBody :: Location -> String -> IO ()
+  printBody :: Location -> [String] -> IO ()
   printBody location note = do
                           let description = getLocationDescription location
-                          printLines 1
+                          printEmptyLines 1
                           printList description
-                          printLines 1
-                          printLines $ mainAreaHeight - 3 - (length description )
-                          printNote note
+                          printEmptyLines $ mainAreaHeight - 3
+                            - (length description ) - length note - 2
+                          printList note
+                          printEmptyLines 1
 
 
   printFooter :: IO ()
@@ -47,13 +50,13 @@ module GameView (
                               let spacer
                                     = div (linesPerScreen - length description
                                     - length endNote - length endIcon) 4
-                              printLines spacer
+                              printEmptyLines spacer
                               printList endIcon
-                              printLines spacer
+                              printEmptyLines spacer
                               printList description
-                              printLines $ spacer -1
+                              printEmptyLines $ spacer -1
                               printList endNote
-                              printLines $ spacer -1 
+                              printEmptyLines $ spacer -1
                               putStrLn newGameRequest
 
 
@@ -81,12 +84,12 @@ module GameView (
   getCharLine :: Char -> [Char]
   getCharLine char = replicate lineWidth char
 
-  printLines :: Int -> IO ()
-  printLines 0 = return ()
-  printLines count
+  printEmptyLines :: Int -> IO ()
+  printEmptyLines 0 = return ()
+  printEmptyLines count
     = do
         putStrLn $ getCharLine ' '
-        printLines (count-1)
+        printEmptyLines (count-1)
 
 
   deathNote :: [String]

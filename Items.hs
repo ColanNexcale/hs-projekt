@@ -8,6 +8,9 @@ module Items (
   reduceBottleFill
 ) where
 
+  -- not fully implemented
+  -- can be used in further developement
+
   data Item = Tool {itemName :: String}
     | Weapon {itemName:: String, damage :: Int, range :: Int}
     | Vessel {itemName :: String, capacity :: Int, fill :: Int}
