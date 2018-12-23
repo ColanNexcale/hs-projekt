@@ -5,8 +5,7 @@ import Data.List
 import GameView
 
 -- main function for immediate gamestart via compiled executable
-main = do
-        game
+main = do game
 
   -- main game loop
   -- when user inputs a character corresponding to a direction or an action
@@ -15,7 +14,6 @@ gameLoop :: Game -> IO Game
 gameLoop (position, person, explorationNote)
     = do
         let currentLocation = getLocationAt position
-        let currentLocationDescription = getLocationDescription currentLocation
         if getHealth person <= 0 || isFinal currentLocation
           then do
             showGameEnd person currentLocation
@@ -45,11 +43,11 @@ game = do
         return ()
 
 -- input collections for distinction
-quitCommands = [":q", ":Q", ":e", ":E"]
-upCommands = ["w", "W"]
-downCommands = ["s", "S"]
-leftCommands = ["a", "a"]
-rightCommands = ["d", "D"]
+quitCommands    = [":q", ":Q", ":e", ":E"]
+upCommands      = ["w", "W"]
+downCommands    = ["s", "S"]
+leftCommands    = ["a", "a"]
+rightCommands   = ["d", "D"]
 exploreCommands = ["u", "U"]
 validInput = quitCommands
             ++ upCommands
@@ -76,43 +74,54 @@ startPosition = (1,1)
 -- according to intended game logic
 processInput :: String -> Person -> Position -> Game
 processInput input person position
-  = if elem input exploreCommands
-    then let  location = getLocationAt position
-              waterDiscovery = getWaterDiscovery location
-              hintDiscovery = getHintDiscovery location
-              modPerson = modifyPersonStats person location waterDiscovery
-              -- explorationNote = getExplorationNote discovery
-              in (position, modPerson, hintDiscovery)
-
-    else if elem input validInput
-        then let  newPosition = getNewPosition input position
-                  newLocation = getLocationAt newPosition
-                  modPerson = modifyPersonStats person newLocation Nothing
-                  in (newPosition, modPerson, [])
-        else (position, person, ["> Ungültige Eingabe"])
+  | elem input exploreCommands = handleExploration person position
+  | elem input validInput      = handleMovement input person position
+  | otherwise                  = (position, person, ["> Ungültige Eingabe"])
+--  = if elem input exploreCommands
+  --  then
+    --      handleExploration person position
+    --else if elem input validInput
+    --    then
+    --    else (position, person, ["> Ungültige Eingabe"])
 
 getNewPosition :: String -> Position -> Position
 getNewPosition input (x,y)
-  | elem input upCommands = (x - 1, y)
-  | elem input downCommands = (x + 1, y)
-  | elem input leftCommands = (x, y - 1)
-  | elem input rightCommands = (x, y + 1)
+  | elem input upCommands     = (x - 1, y)
+  | elem input downCommands   = (x + 1, y)
+  | elem input leftCommands   = (x, y - 1)
+  | elem input rightCommands  = (x, y + 1)
   | otherwise = (x,y)
+
+
+-- processes exploration events i.e. modifying persons health/hydration status
+-- and adding items
+handleExploration :: Person -> Position -> Game
+handleExploration person position
+  = let location        = getLocationAt position
+        newItem         = getItemDiscovery location
+        waterDiscovery  = getWaterDiscovery location
+        modPerson       = addItem newItem
+          $ modifyPersonStats person location waterDiscovery
+        hintDiscovery   = getHintDiscovery location
+    in (position, modPerson, hintDiscovery)
+
+-- processes movement and modifies person health/hydration according to the
+-- upcomming location
+handleMovement :: String -> Person -> Position -> Game
+handleMovement input person position
+  = let newPosition = getNewPosition input position
+        newLocation = getLocationAt newPosition
+        modPerson   = modifyPersonStats person newLocation Nothing
+    in (newPosition, modPerson, [])
 
 -- distinguishes between death and successful game end and delegates screen
 -- output to GameView methods
 showGameEnd :: Person -> Location -> IO ()
 showGameEnd person location
   | getHealth person <= 0 = printDeath
-  | isFinal location = printSolved $ getLocationDescription location
+  | isFinal location      = printSolved $ getLocationDescription location
   | otherwise = return ()
 
-getExplorationNote :: Maybe Water -> String
-getExplorationNote Nothing = "> Du findest nichts"
-getExplorationNote (Just (amount, risk))
-  | amount == 100 = " > Du findest einen Bachlauf. Wie erfrischend!"
-  | amount == 10 = "> Du findest eine fast ausgetrocknete Pfütze Wasser. Besser als nichts..."
-  | otherwise = "Du findest etwas Wasser"
 
 -- used to change person states according to discovery events or the standard
 -- hydration modifier from a locations attribute

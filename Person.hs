@@ -16,7 +16,11 @@ module Person(
 
   import Items
 
-  data Person = Person {personName:: String, health :: Int, hydration :: Int, items :: [Item]}
+  data Person = Person {
+    personName:: String,
+    health :: Int,
+    hydration :: Int,
+    items :: [Item]}
 
   data PersonAttribute = Health | Hydration
     deriving (Eq)
@@ -37,7 +41,7 @@ module Person(
   modifyAttribute :: Person -> PersonAttribute -> Int -> Person
   modifyAttribute (Person name health hydration items) attr modifier
     = case  attr of
-            Health -> Person name (health - modifier) hydration items
+            Health    -> Person name (health - modifier) hydration items
             Hydration -> Person name health (hydration - modifier) items
 
 
@@ -51,11 +55,15 @@ module Person(
   -- pass negative int to add to hydration
   modifyHydration :: Person -> Int -> Person
   modifyHydration (Person n he hy i) (999) = Person n 0 hy i
-  modifyHydration (Person n he hy i) hydrModifier
-    | hy <= 0 && hydrModifier > 0 = modifyAttribute (Person n he hy i) Health hydrModifier
-    | hy - hydrModifier <= 0 =  modifyAttribute (Person n he 0 i) Health (hydrModifier - hy) -- Person n he 0 i
-    | hy - hydrModifier >= 100 = Person n he 100 i
-    | otherwise = modifyAttribute (Person n he hy i) Hydration hydrModifier
+  modifyHydration (Person n he hy i) modifier
+    | hy <= 0 && modifier > 0
+      = modifyAttribute (Person n he hy i) Health modifier
+    | hy - modifier <= 0
+      = modifyAttribute (Person n he 0 i) Health (modifier - hy)
+    | hy - modifier >= 100
+      = Person n he 100 i
+    | otherwise
+      = modifyAttribute (Person n he hy i) Hydration modifier
 
 
   -- functions for item management
@@ -65,14 +73,18 @@ module Person(
 
   getItemNames :: Person -> String
   getItemNames (Person  _  _  _  items) = format (map (getItemName) items) []
-    where format [] _ = "Keine Items"
-          format [item] [] = item
+    where format [] _         = "Keine Items"
+          format [item] []    = item
           format [item] items = items ++ (", ") ++item
-          format (i:is) items = (format is items) ++ i
+          format (i:is) items = (format is items) ++ (", ") ++ i
 
 
-  addItem :: Person -> Item -> Person
-  addItem (Person n he hy items) newItem = Person n he hy (items ++ [newItem])
+  addItem :: Maybe Item -> Person -> Person
+  addItem Nothing p         = p
+  addItem (Just newItem) p  = addConditionally p newItem
+    where addConditionally (Person n he hy items) newItem
+            | elem newItem items  = Person n he hy items
+            | otherwise           = Person n he hy (items ++ [newItem])
 
   removeItem :: Person -> Item -> Person
   removeItem (Person n he hy items) rmvItem
@@ -84,8 +96,8 @@ module Person(
 
 
   startCharacter = Person {
-    personName = "Mosh",
-    health = startHealth,
-    hydration = startHydration,
-    items = startItems
+    personName  = "Mosh",
+    health      = startHealth,
+    hydration   = startHydration,
+    items       = startItems
   }

@@ -7,6 +7,7 @@ module GameMap (
   getLocationDescription,
   getWaterDiscovery,
   getHintDiscovery,
+  getItemDiscovery,
   isFinal,
   startLocation,
   endLocation
@@ -54,6 +55,9 @@ module GameMap (
   getHintDiscovery :: Location -> Hint
   getHintDiscovery loc = getHint $ getDiscovery loc
 
+  getItemDiscovery :: Location -> Maybe Item
+  getItemDiscovery loc = getItem $ getDiscovery loc
+
   -- import function for main game
   -- searches GameMap and returns location in order to access all import
   -- information of the location data type
@@ -77,7 +81,7 @@ module GameMap (
     ((0,2), forestBorder),
     ((0,3), forestBorder),
     ((0,4), openPlain),
-    ((1,0), ledge),
+    ((1,0), ledgeJammerDiscovery),
     ((1,(-1)), deadlyLocation),
     ((1,1), startLocation),
     ((1,2), denseForest),
@@ -105,90 +109,100 @@ module GameMap (
   startLocation :: Location
   startLocation
     = Location {
-      locationName = "Waldhuette",
-      sunExposure = 0,
+      locationName        = "Waldhuette",
+      sunExposure         = 0,
       locationDescription = startDescription,
-      discovery = nothingToDiscover,
-      isFinal = False
+      discovery           = waterBottleDiscovery,
+      isFinal             = False
     }
 
   endLocation :: Location
   endLocation
     = Location {
-      locationName = "Sichere Scheune",
-      sunExposure = 0,
+      locationName        = "Sichere Scheune",
+      sunExposure         = 0,
       locationDescription = endDescription,
-      discovery = nothingToDiscover,
-      isFinal = True
+      discovery           = nothingToDiscover,
+      isFinal             = True
     }
 
   deadlyLocation :: Location
   deadlyLocation
     = Location {
-      locationName = "Hier wartet der Tod",
-      sunExposure = 999,
+      locationName        = "Hier wartet der Tod",
+      sunExposure         = 999,
       locationDescription = deadlyDescription,
-      discovery = nothingToDiscover,
-      isFinal = False
+      discovery           = nothingToDiscover,
+      isFinal             = False
     }
   denseForest :: Location
   denseForest
     = Location {
-      locationName = "Dichter Wald",
-      sunExposure = 5,
+      locationName        = "Dichter Wald",
+      sunExposure         = 5,
       locationDescription = denseForestDescription,
-      discovery = smallStreamDiscovery,
-      isFinal = False
+      discovery           = smallStreamDiscovery,
+      isFinal             = False
     }
 
   lightForest :: Location
   lightForest
     = Location {
-      locationName = "Lichter Wald",
-      sunExposure = 10,
+      locationName        = "Lichter Wald",
+      sunExposure         = 10,
       locationDescription = lightForestDescription,
-      discovery = puddleOfWaterDiscovery,
-      isFinal = False
+      discovery           = puddleOfWaterDiscovery,
+      isFinal             = False
     }
 
   forestBorder :: Location
   forestBorder
     = Location {
-      locationName = "Waldrand",
-      sunExposure = 15,
+      locationName        = "Waldrand",
+      sunExposure         = 15,
       locationDescription = forestBorderDescription,
-      discovery = nothingToDiscover,
-      isFinal = False
+      discovery           = nothingToDiscover,
+      isFinal             = False
     }
 
   ledge :: Location
   ledge
     = Location {
-      locationName = "Felsvorsprung",
-      sunExposure = 20,
+      locationName        = "Felsvorsprung",
+      sunExposure         = 20,
       locationDescription = ledgeDescription,
-      discovery = nothingToDiscover,
-      isFinal = False
+      discovery           = nothingToDiscover,
+      isFinal             = False
+    }
+
+  ledgeJammerDiscovery :: Location
+  ledgeJammerDiscovery
+    = Location {
+    locationName        = "Felsvorsprung",
+    sunExposure         = 20,
+    locationDescription = ledgeDescription,
+    discovery           = jammerDiscovery,
+    isFinal             = False
     }
 
   openPlain :: Location
   openPlain
     = Location {
-      locationName = "Offenes Feld",
-      sunExposure = 25,
+      locationName        = "Offenes Feld",
+      sunExposure         = 25,
       locationDescription = openPlainDescription,
-      discovery = nothingToDiscover,
-      isFinal = False
+      discovery           = nothingToDiscover,
+      isFinal             = False
     }
 
   bigRock :: Location
   bigRock
     = Location {
-      locationName = "Riesieger Fels",
-      sunExposure = 20,
+      locationName        = "Riesieger Fels",
+      sunExposure         = 20,
       locationDescription = bigRockDescription,
-      discovery = bigRockDiscovery,
-      isFinal = False
+      discovery           = bigRockDiscovery,
+      isFinal             = False
     }
 
   startDescription = [

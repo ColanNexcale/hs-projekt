@@ -9,9 +9,9 @@ module GameView (
   import Person
   import GameMap
 
-  lineWidth = 80
-  mainAreaHeight = 18
-  linesPerScreen = 24
+  lineWidth       = 80
+  mainAreaHeight  = 18
+  linesPerScreen  = 24
 
   -- bundles all methods for displaying the game progress
   -- constants and relative amounts of blank lines ensure integer screen
@@ -76,8 +76,8 @@ module GameView (
           : (getCharLine '-') : []
 
   printList :: [String] -> IO ()
-  printList [] = return ()
-  printList (l:ls) = do
+  printList []      = return ()
+  printList (l:ls)  = do
                         putStrLn l
                         printList ls
 
@@ -85,11 +85,10 @@ module GameView (
   getCharLine char = replicate lineWidth char
 
   printEmptyLines :: Int -> IO ()
-  printEmptyLines 0 = return ()
-  printEmptyLines count
-    = do
-        putStrLn $ getCharLine ' '
-        printEmptyLines (count-1)
+  printEmptyLines 0     = return ()
+  printEmptyLines count = do
+                            putStrLn $ getCharLine ' '
+                            printEmptyLines (count-1)
 
 
   deathNote :: [String]

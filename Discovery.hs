@@ -3,37 +3,58 @@ module Discovery (
   Hint,
   getWater,
   getHint,
+  getItem,
   bigRockDiscovery,
   puddleOfWaterDiscovery,
   smallStreamDiscovery,
+  jammerDiscovery,
+  waterBottleDiscovery,
   nothingToDiscover
 ) where
   import Items
-  --import GameMap
 
   type Hint = [String]
 
-
-  data Discovery = Discovery (Maybe Water) Hint | None
+  data Discovery = Discovery (Maybe Water) Hint (Maybe Item)| None
 
   getWater :: Discovery -> Maybe Water
-  getWater (Discovery Nothing _ ) = Nothing
-  getWater (Discovery (Just (amount, risk)) _ ) = Just (amount, risk)
+  getWater (Discovery Nothing _ _ ) = Nothing
+  getWater (Discovery water _ _ )   = water
 
   getHint :: Discovery -> Hint
-  getHint (Discovery _ hint) = hint
+  getHint (Discovery _ hint _) = hint
 
-  bigRockDiscovery = Discovery Nothing bigRockHint
+  getItem :: Discovery -> Maybe Item
+  getItem (Discovery _ _ Nothing) = Nothing
+  getItem (Discovery _ _ item)    = item
 
-  puddleOfWaterDiscovery = Discovery puddleOfWater puddleOfWaterHint
-  puddleOfWaterHint = ["> Du findest eine fast ausgetrocknete Pfütze Wasser. Besser als nichts..."]
+  bigRockDiscovery = Discovery Nothing bigRockHint Nothing
 
-  smallStreamDiscovery = Discovery smallStream smallStreamHint
+  puddleOfWaterDiscovery = Discovery puddleOfWater puddleOfWaterHint Nothing
+  puddleOfWaterHint = [
+    "> Du findest eine fast ausgetrocknete Pfütze Wasser.",
+    "Besser als nichts..."
+    ]
+
+  smallStreamDiscovery = Discovery smallStream smallStreamHint Nothing
   smallStreamHint = ["> Du findest einen Bachlauf. Wie erfrischend!"]
 
-  nothingToDiscover = Discovery Nothing nothingHint
+  jammerDiscovery = Discovery Nothing jammerHint $ Just jammer
+  jammerHint = [
+    "> Du findest einen Elektronik Jammer. Ungefährlich für Menschen, aber",
+    "tödlich für Maschinen. Damit kannst du sämtliche Elektronik in einem",
+    "Kegel vor dir lahmlegen."
+    ]
 
-  nothingHint = ["> Hier gibt es nichts zu entdecken"]
+  waterBottleDiscovery = Discovery Nothing waterBottleHint $ Just  waterBottle
+  waterBottleHint = [
+    "> Du findest eine alte Wasserflasche. Sie hat zwar schon bessere Tage",
+    "gesehen, aber diese Dinger sind gebaut für die Ewigkeit. Du kannst etwas",
+    "Wasser darin transportieren und unterwegs trinken."
+    ]
+
+  nothingToDiscover = Discovery Nothing nothingHint Nothing
+  nothingHint = ["> Hier gibt es nichts zu entdecken."]
 
   puddleOfWater :: Maybe Water
   puddleOfWater = Just (10, 50)

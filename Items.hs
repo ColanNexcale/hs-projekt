@@ -5,14 +5,15 @@ module Items (
   getItemName,
   getBottleFill,
   getBottleCapacity,
-  reduceBottleFill
+  reduceBottleFill,
+  jammer
 ) where
 
   -- not fully implemented
   -- can be used in further developement
 
   data Item = Tool {itemName :: String}
-    | Weapon {itemName:: String, damage :: Int, range :: Int}
+    | Weapon {itemName:: String, damage :: Int}
     | Vessel {itemName :: String, capacity :: Int, fill :: Int}
     deriving (Eq)
 
@@ -26,7 +27,8 @@ module Items (
   getBottleFill = fill waterBottle
 
   reduceBottleFill :: Int -> Item -> Item
-  reduceBottleFill withdrawValue (Vessel name capac fill) = Vessel name capac (fill - withdrawValue)
+  reduceBottleFill withdrawValue (Vessel name capac fill)
+    = Vessel name capac (fill - withdrawValue)
   reduceBottieFill otherItem = otherItem
 
   getBottleCapacity :: Int
@@ -34,3 +36,6 @@ module Items (
 
   getItemName :: Item -> String
   getItemName item = itemName item
+
+  jammer :: Item
+  jammer = Tool "Elektronik Jammer"
