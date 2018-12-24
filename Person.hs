@@ -9,7 +9,7 @@ module Person(
   addItem,
   removeItem,
   isNewItem,
-  getItemNames,
+--  getItemNames,
   startCharacter
 ) where
 
@@ -72,13 +72,12 @@ module Person(
   getItems :: Person -> [Item]
   getItems p = items p
 
-  getItemNames :: Person -> String
-  getItemNames (Person  _  _  _  items) = format (map (getItemName) items) []
-    where format [] _         = "Keine Items"
-          format [item] []    = item
-          format [item] items = items ++ (", ") ++item
-          format (i:is) items = (format is items) ++ (", ") ++ i
-
+--  getItemNames :: Person -> String
+--  getItemNames (Person  _  _  _  items) = format (map (getItemName) items) []
+--    where format [] _         = "Keine Items"
+--          format [item] []    = formatItem item
+--          format [item] items = items ++ (", ") ++ (formatItem item)
+--          format (i:is) items = (format is items) ++ (", ") ++ (formatItem i)
 
   addItem :: Maybe Item -> Person -> Person
   addItem Nothing p         = p

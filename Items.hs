@@ -2,13 +2,14 @@ module Items (
   Item,
   Water,
   waterBottle,
+  isVessel,
   getItemName,
+  getItemInfo,
   getBottleFill,
   getBottleCapacity,
   reduceBottleFill,
   jammer
 ) where
-
   -- not fully implemented
   -- can be used in further developement
 
@@ -22,6 +23,10 @@ module Items (
 
   waterBottle :: Item
   waterBottle = Vessel {itemName = "Wasserflasche", capacity = 50, fill = 50}
+
+  isVessel :: Item -> Bool
+  isVessel (Vessel _ _ _) = True
+  isVessel _ = False
 
   getBottleFill :: Int
   getBottleFill = fill waterBottle
@@ -39,3 +44,9 @@ module Items (
 
   jammer :: Item
   jammer = Tool "Elektronik Jammer"
+
+
+  getItemInfo :: Item -> String
+  getItemInfo (Vessel n cap fill)
+    = n ++ " - Menge: " ++ (show fill) ++ " - Max: " ++(show cap)
+  getItemInfo item = itemName item

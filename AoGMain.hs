@@ -46,7 +46,7 @@ game = do
                   gameLoop start
                   return()
         else do
-                putStrLn "Bye"
+                putStrLn "Verräter!"
                 return ()
 
 -- input collections for distinction

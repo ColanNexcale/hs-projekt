@@ -9,6 +9,7 @@ module GameView (
 ) where
   import Person
   import GameMap
+  import Items
 
   lineWidth       = 80
   mainAreaHeight  = 18
@@ -26,8 +27,8 @@ module GameView (
                           let description = getLocationDescription location
                           printEmptyLines 1
                           printList description
-                          printEmptyLines $ mainAreaHeight - 3
-                            - (length description ) - length note - 2
+                          printEmptyLines $ mainAreaHeight - 6
+                            - (length description ) - length note
                           printList note
                           printEmptyLines 1
 
@@ -76,9 +77,21 @@ module GameView (
   createHeaderArea :: Person -> [String]
   createHeaderArea p
     = ("Status # Leben: " ++ (show $ getHealth p)
-         ++ " # Wasserhaushalt: " ++ (show $ getHydration p)
-          ++ " # " ++ (getItemNames p))
-          : (getCharLine '-') : []
+         ++ " # Wasserhaushalt: " ++ (show $ getHydration p))
+          : (formatItems p)
+            : (getCharLine '-') : []
+
+  formatItems :: Person -> String
+  formatItems person
+    = let items = getItems person
+          formattedItems = map (getItemInfo) items
+      in joinItems formattedItems
+
+  joinItems :: [String] -> String
+  joinItems [] = "Keine Items"
+  joinItems [i] = i
+  joinItems (i:is) = i ++ (", ") ++ joinItems is
+
 
   printList :: [String] -> IO ()
   printList []      = return ()

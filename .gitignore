@@ -4,6 +4,7 @@
 
 *.txt
 *.odg
+Abgabe/
 
 ### Haskell ###
 dist
